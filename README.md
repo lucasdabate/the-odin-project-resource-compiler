@@ -1,10 +1,31 @@
 # The Odin Project Resource Compiler
-Easily compile The Odin Project's lessons and referenced external resources into consumable markdown files
+Easily compile The Odin Project's lessons and referenced external resources into consumable markdown files.
+
+This script was created the address the problem of falling behind course updates, while creating consumable files that can be used for different purposes.
+
+### Keep Up
+Because The Odin Project (TOP) fetches lesson content from a live repository, it is a constantly evolving course, with lessons being updated constantly. If it's been a while since you completed a basic CSS lesson and a new technique has become fundamental since then, you'll have missed out by the time you finish the course. To address this, the script will store the state of the repo upon an initial run, then it will compare its state to the local version upon subsequent runs. It will then create a human-readable diff report for you to know what has changed during that period, so you can go back to those lessons and see what's new without having to keep up with the curriculum's repository PRs.
+
+### Compile Every Resource
+The script will create compilation files that include the original TOP lessons, as well as markdown versions of the external resources linked at the bottom of each one via the Jina service. You can either read these monolithic files yourself, or feed them to an external tool such as RAG-enabled LLMs for studying purposes.
 
 ## Usage
-Run with Node to have the script fetch lesson files from [The Odin Project's Curriculum Repository](https://github.com/theodinproject/curriculum) and external resources listed in each lesson. The script will create a `compile` folder where it will output the processed files. Each course section will be contained within its own markdown file (e.g. `foundations-html_css.md`).
+Ensure you have installed `nodejs` on your machine.
+Run with `$ node top-compiler.js` to have the script fetch lesson files from [The Odin Project's Curriculum Repository](https://github.com/theodinproject/curriculum) and external resources listed in each lesson.
+
+The script will create a `compile` folder where it will output the processed files. Each course will be contained within its own markdown file (e.g. `foundations.md`). The script will also create a state file that it will use during subsequent runs to create a diff report, as well as store cached versions of individual lessons and their resources.
+
+When you run the script again, it will update the outdated lesson files, and create a diff report so you know what to look for.
 
 ## Configuration
-Modify the script's `ALLOWED_COURSES` array with the courses you want to fetch, using the top-level folder names in the curriculum repository.
+### Course Coverage
+Modify the script's `ALLOWED_COURSES` array with the courses you want to compile, using the top-level folder names from the curriculum repository linked above. By default, the script will fetch the "Foundations" course and every course from the Full Stack JavaScript path, except for "Getting Hired". You can modify the array to compile the Ruby on Rails path, exclude the Foundations course, or anything else you want.
 
-By default, the script will compile *course sections*, but you can change the `COMPILE_COURSE` to `true` if you want the script to output a single file for the entire course.
+### Compile Scope
+By default, the script will compile *course sections*, but you can change the `SEPARATE_SECTIONS` variable to `false` if you want the script to output individual files for each course. Use this to control the specificity and scope of each file depending on your needs.
+Regardless of which one you choose, the script will store cached versions of individual lessons in the `lessons_cache` folder, and you can change the scope setting and re-run the script to obtain the desired files. If no differences are found between the current and stored states of the course, it will compile from the cached files directly.
+
+## Use Cases
+You can feed these files to external tools. A good example is creating a studying companion using LLMs and RAG. Because LLMs are trained on general knowledge, it doesn't always know what code examples from the web are outdated, low quality, or wrong. Feeding it curated content and asking it to prioritize that is likely to result in higher quality responses.
+
+These files also make it possible for you to ask an LLM a question that the course material has a specific answer for and have it give that answer to you, rather than a generic one that might differ vastly form what you've learnt to be a good answer.
